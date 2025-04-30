@@ -1,7 +1,7 @@
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Download } from "lucide-react";
+import { Download, FileText } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function Resume() {
   const education = [
@@ -50,115 +50,80 @@ export function Resume() {
   ];
 
   return (
-    <section id="resume" className="py-20 bg-secondary/30">
+    <section id="resume" className="py-20 bg-secondary/10">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-12">
-          <h2 className="text-3xl font-bold">Resume</h2>
-          <Button asChild className="mt-4 md:mt-0 flex items-center gap-2">
-            <a href="/kaveesha_resume.pdf" download>
-              <Download className="h-4 w-4" /> Download CV
-            </a>
-          </Button>
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold mb-4">Resume</h2>
+          <p className="text-muted-foreground max-w-2xl mx-auto">
+            My educational background and professional experience in software engineering and development.
+          </p>
         </div>
-
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
-          <div>
-            <h3 className="text-2xl font-bold mb-6">Education</h3>
-            <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-muted-foreground/20 before:to-transparent">
-              {education.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
-                >
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full border border-muted bg-card shadow-sm group-odd:md:translate-x-1/2 group-even:md:-translate-x-1/2">
-                    <svg
-                      className="h-5 w-5 text-primary"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                      />
-                    </svg>
-                  </div>
-                  <Card className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] shadow-sm">
-                    <CardContent className="p-4">
-                      <div className="mb-1">
-                        <span className="font-semibold">{item.degree}</span>
-                      </div>
-                      <div className="mb-2 text-sm text-muted-foreground">
-                        {item.institution}
-                      </div>
-                      <div className="mb-3 text-xs text-muted-foreground">
-                        {item.period}
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {item.description}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </div>
-              ))}
-            </div>
+        
+        <div className="max-w-4xl mx-auto">
+          <div className="flex justify-end mb-6">
+            <Button asChild variant="outline" className="flex items-center gap-2">
+              <a href="/kaveesha_resume.pdf" download>
+                <FileText className="h-4 w-4" /> Download Full Resume
+              </a>
+            </Button>
           </div>
           
-          <div>
-            <h3 className="text-2xl font-bold mb-6">Experience</h3>
-            <div className="space-y-6 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-muted-foreground/20 before:to-transparent">
-              {experience.map((item, index) => (
-                <div
-                  key={item.id}
-                  className="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
-                >
-                  <div className="flex items-center justify-center w-10 h-10 rounded-full border border-muted bg-card shadow-sm group-odd:md:translate-x-1/2 group-even:md:-translate-x-1/2">
-                    <svg
-                      className="h-5 w-5 text-primary"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                      />
-                    </svg>
-                  </div>
-                  <Card className="w-[calc(100%-4rem)] md:w-[calc(50%-2.5rem)] shadow-sm">
-                    <CardContent className="p-4">
-                      <div className="mb-1">
-                        <span className="font-semibold">{item.position}</span>
-                      </div>
-                      <div className="mb-2 text-sm text-muted-foreground">
-                        {item.company}
-                      </div>
-                      <div className="mb-3 text-xs text-muted-foreground">
+          <Tabs defaultValue="experience" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 mb-8">
+              <TabsTrigger value="experience">Experience</TabsTrigger>
+              <TabsTrigger value="education">Education</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="experience" className="space-y-6">
+              {experience.map((item) => (
+                <div key={item.id} className="border border-border rounded-lg p-6 bg-card transition-all hover:shadow-md">
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                    <div>
+                      <h3 className="text-xl font-semibold">{item.position}</h3>
+                      <p className="text-muted-foreground">{item.company}</p>
+                      <p className="text-sm text-muted-foreground mb-4">{item.period}</p>
+                      <p className="mb-4">{item.description}</p>
+                    </div>
+                    <div className="shrink-0">
+                      <span className="inline-block rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground">
                         {item.period}
-                      </div>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        {item.description}
-                      </p>
-                      <div className="flex flex-wrap gap-1">
-                        {item.technologies.map((tech) => (
-                          <span
-                            key={tech}
-                            className="text-xs px-2 py-1 rounded-full bg-secondary"
-                          >
-                            {tech}
-                          </span>
-                        ))}
-                      </div>
-                    </CardContent>
-                  </Card>
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {item.technologies.map((tech) => (
+                      <span
+                        key={tech}
+                        className="text-xs px-3 py-1 rounded-full bg-secondary"
+                      >
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
                 </div>
               ))}
-            </div>
-          </div>
+            </TabsContent>
+            
+            <TabsContent value="education" className="space-y-6">
+              {education.map((item) => (
+                <div key={item.id} className="border border-border rounded-lg p-6 bg-card transition-all hover:shadow-md">
+                  <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+                    <div>
+                      <h3 className="text-xl font-semibold">{item.degree}</h3>
+                      <p className="text-muted-foreground">{item.institution}</p>
+                      <p className="text-sm text-muted-foreground mb-4">{item.period}</p>
+                      <p>{item.description}</p>
+                    </div>
+                    <div className="shrink-0">
+                      <span className="inline-block rounded-full bg-primary px-3 py-1 text-xs text-primary-foreground">
+                        {item.period}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </TabsContent>
+          </Tabs>
         </div>
       </div>
     </section>
