@@ -1,8 +1,18 @@
 
 import { ArrowDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { TypewriterEffect } from "./TypewriterEffect";
 
 export function Hero() {
+  const developerTitles = [
+    "Full Stack Developer",
+    "Java Developer", 
+    "Angular Developer", 
+    "Spring Boot Developer", 
+    "React Developer", 
+    "Backend Developer"
+  ];
+
   return (
     <section
       id="home"
@@ -16,7 +26,7 @@ export function Hero() {
         </div>
         <div className="animate-fade-in opacity-0" style={{ animationDelay: "0.4s" }}>
           <h2 className="mb-8 text-2xl md:text-3xl font-medium text-muted-foreground">
-            Software Engineer Intern | Full Stack Developer
+            Software Engineer Intern | <TypewriterEffect titles={developerTitles} />
           </h2>
         </div>
         <div className="animate-fade-in opacity-0" style={{ animationDelay: "0.6s" }}>
