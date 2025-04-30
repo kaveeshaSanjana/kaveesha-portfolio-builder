@@ -1,6 +1,6 @@
 
 import { Button } from "@/components/ui/button";
-import { Download, FileText } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export function Resume() {
@@ -63,7 +63,8 @@ export function Resume() {
           <div className="flex justify-end mb-6">
             <Button asChild variant="outline" className="flex items-center gap-2">
               <a href="/kaveesha_resume.pdf" download>
-                <FileText className="h-4 w-4" /> Download Full Resume
+                <img src="https://img.icons8.com/color/24/null/pdf-2.png" alt="PDF" className="h-4 w-4" /> 
+                Download Full Resume
               </a>
             </Button>
           </div>

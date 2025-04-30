@@ -1,6 +1,4 @@
 
-import { Github, Linkedin, Mail } from "lucide-react";
-
 export function Footer() {
   return (
     <footer className="bg-secondary py-8">
@@ -17,7 +15,7 @@ export function Footer() {
               className="text-muted-foreground hover:text-foreground transition-colors"
               aria-label="GitHub"
             >
-              <Github className="h-5 w-5" />
+              <img src="https://img.icons8.com/color/24/null/github.png" alt="GitHub" className="h-5 w-5" />
             </a>
             <a
               href="https://linkedin.com/in/kaveeshasanjana"
@@ -26,14 +24,14 @@ export function Footer() {
               className="text-muted-foreground hover:text-foreground transition-colors"
               aria-label="LinkedIn"
             >
-              <Linkedin className="h-5 w-5" />
+              <img src="https://img.icons8.com/color/24/null/linkedin.png" alt="LinkedIn" className="h-5 w-5" />
             </a>
             <a
               href="mailto:kavishasanjana@gmail.com"
               className="text-muted-foreground hover:text-foreground transition-colors"
               aria-label="Email"
             >
-              <Mail className="h-5 w-5" />
+              <img src="https://img.icons8.com/color/24/null/gmail.png" alt="Email" className="h-5 w-5" />
             </a>
           </div>
         </div>

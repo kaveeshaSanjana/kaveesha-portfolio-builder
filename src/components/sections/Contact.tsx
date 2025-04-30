@@ -4,7 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
-import { Github, Linkedin, Mail } from "lucide-react";
 
 export function Contact() {
   const { toast } = useToast();
@@ -58,7 +57,7 @@ export function Contact() {
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <div className="bg-primary/10 p-3 rounded-full">
-                  <Mail className="h-6 w-6 text-primary" />
+                  <img src="https://img.icons8.com/color/24/null/gmail.png" alt="Email" className="h-6 w-6" />
                 </div>
                 <div>
                   <h4 className="font-medium">Email</h4>
@@ -73,7 +72,7 @@ export function Contact() {
               
               <div className="flex items-center gap-4">
                 <div className="bg-primary/10 p-3 rounded-full">
-                  <Github className="h-6 w-6 text-primary" />
+                  <img src="https://img.icons8.com/color/24/null/github.png" alt="GitHub" className="h-6 w-6" />
                 </div>
                 <div>
                   <h4 className="font-medium">GitHub</h4>
@@ -90,7 +89,7 @@ export function Contact() {
               
               <div className="flex items-center gap-4">
                 <div className="bg-primary/10 p-3 rounded-full">
-                  <Linkedin className="h-6 w-6 text-primary" />
+                  <img src="https://img.icons8.com/color/24/null/linkedin.png" alt="LinkedIn" className="h-6 w-6" />
                 </div>
                 <div>
                   <h4 className="font-medium">LinkedIn</h4>
