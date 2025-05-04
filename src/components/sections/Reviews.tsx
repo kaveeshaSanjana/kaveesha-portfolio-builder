@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -19,8 +18,8 @@ import {
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 
-// Google Sheet submission URL
-const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbxi6uCFlKzNNFe8NfXQF_csIbgBxH_DjNnYyeBvQRsFwz_JaL-y52wwfnBz9PR8phpj/exec";
+// Updated Google Sheet submission URL
+const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbzLVMlKLRyeLvpxkBypp6aMrc0aHHufJ7m064d4lsvIjTxSKvWkosGhCFP8kTiJKj6R/exec";
 
 // Schema for review form validation
 const reviewSchema = z.object({
@@ -78,7 +77,7 @@ export function Reviews() {
       formData.append("review", data.review);
       formData.append("rating", data.rating.toString());
       
-      // Make the fetch request to Google Sheet script
+      // Make the fetch request to Google Sheet script with updated URL
       await fetch(GOOGLE_SHEET_URL, {
         method: "POST",
         body: formData,
