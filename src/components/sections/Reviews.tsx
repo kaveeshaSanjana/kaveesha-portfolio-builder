@@ -25,15 +25,21 @@ const reviewSchema = z.object({
 
 type ReviewFormValues = z.infer<typeof reviewSchema>;
 
+// Define review type to avoid TS errors
+type Review = {
+  name: string;
+  review: string;
+};
+
 // Sample initial reviews
-const initialReviews = [
+const initialReviews: Review[] = [
   { name: "John Doe", review: "Excellent work! Very professional and responsive." },
   { name: "Jane Smith", review: "Great attention to detail and deliverables were on time." },
   { name: "Mike Johnson", review: "Fantastic developer with strong technical skills." },
 ];
 
 export function Reviews() {
-  const [reviews, setReviews] = useState(initialReviews);
+  const [reviews, setReviews] = useState<Review[]>(initialReviews);
   
   // Form setup with validation
   const form = useForm<ReviewFormValues>({
