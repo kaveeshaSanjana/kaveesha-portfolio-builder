@@ -6,6 +6,7 @@ import { About } from "@/components/sections/About";
 import { Projects } from "@/components/sections/Projects";
 import { Resume } from "@/components/sections/Resume";
 import { Contact } from "@/components/sections/Contact";
+import { Reviews } from "@/components/sections/Reviews";
 import { useEffect } from "react";
 
 const Index = () => {
@@ -44,6 +45,7 @@ const Index = () => {
         <About />
         <Projects />
         <Resume />
+        <Reviews />
         <Contact />
       </main>
       <Footer />
