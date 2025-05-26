@@ -46,12 +46,16 @@ export function FloatingTechLogos() {
     // Animation loop
     const animateLogos = () => {
       setLogos(prevLogos =>
-        prevLogos.map(logo => ({
-          ...logo,
-          x: logo.x + logo.speed,
-          y: logo.y + Math.sin(logo.x * 0.01) * 0.5,
-          x: logo.x > window.innerWidth + 50 ? -50 : logo.x,
-        }))
+        prevLogos.map(logo => {
+          const newX = logo.x + logo.speed;
+          const resetX = newX > window.innerWidth + 50 ? -50 : newX;
+          
+          return {
+            ...logo,
+            x: resetX,
+            y: logo.y + Math.sin(logo.x * 0.01) * 0.5,
+          };
+        })
       );
     };
 
