@@ -11,7 +11,7 @@ interface TypewriterEffectProps {
 export function TypewriterEffect({
   titles,
   typingSpeed = 100,
-  deletingSpeed = 50,
+  deletingSpeed = 30, // Faster erasing speed (was 50)
   delayBetween = 1000,
 }: TypewriterEffectProps) {
   const [text, setText] = useState('');
@@ -36,6 +36,7 @@ export function TypewriterEffect({
       } else {
         // Deleting
         setText(currentTitle.substring(0, text.length - 1));
+        setDelta(deletingSpeed); // Use faster deleting speed
         
         // If we've deleted the entire text
         if (text === '') {
@@ -47,7 +48,7 @@ export function TypewriterEffect({
     }, delta);
 
     return () => clearTimeout(interval);
-  }, [text, isDeleting, currentIndex, delta, titles, typingSpeed, delayBetween]);
+  }, [text, isDeleting, currentIndex, delta, titles, typingSpeed, deletingSpeed, delayBetween]);
 
   return <span className="text-primary">{text}</span>;
 }
