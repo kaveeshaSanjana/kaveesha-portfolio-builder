@@ -57,23 +57,44 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
+    e.stopPropagation();
+    return false;
+  };
+
+  const handleDragStart = (e: React.DragEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+  };
+
+  const handleSelectStart = (e: React.SyntheticEvent) => {
+    e.preventDefault();
     return false;
   };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-full p-0" onContextMenu={handleContextMenu}>
+      <DialogContent 
+        className="max-w-4xl w-full p-0" 
+        onContextMenu={handleContextMenu}
+        onDragStart={handleDragStart}
+      >
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="flex items-center justify-between">
             <span>{title || 'Video Preview'}</span>
           </DialogTitle>
         </DialogHeader>
-        <div className="p-6 pt-4" onContextMenu={handleContextMenu}>
+        <div 
+          className="p-6 pt-4" 
+          onContextMenu={handleContextMenu}
+          onDragStart={handleDragStart}
+        >
           {shouldUseIframe ? (
             <div 
               className="relative w-full select-none" 
-              style={{ paddingBottom: '56.25%' }}
+              style={{ paddingBottom: '56.25%', userSelect: 'none', pointerEvents: 'none' }}
               onContextMenu={handleContextMenu}
+              onDragStart={handleDragStart}
             >
               <iframe
                 src={embedUrl!}
@@ -84,20 +105,26 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
                 allowFullScreen
                 style={{ border: 'none' }}
               />
-              {/* Security overlay - only for YouTube */}
-              {isYouTube && (
-                <div 
-                  className="absolute inset-0 pointer-events-none z-10"
-                  onContextMenu={handleContextMenu}
-                  style={{ userSelect: 'none' }}
-                />
-              )}
+              {/* Security overlay to prevent interactions */}
+              <div 
+                className="absolute inset-0 z-10"
+                onContextMenu={handleContextMenu}
+                onDragStart={handleDragStart}
+                style={{ 
+                  userSelect: 'none',
+                  WebkitUserSelect: 'none',
+                  MozUserSelect: 'none',
+                  msUserSelect: 'none',
+                  pointerEvents: 'none'
+                }}
+              />
             </div>
           ) : embedUrl ? (
             <div 
               className="relative w-full select-none" 
-              style={{ paddingBottom: '56.25%' }}
+              style={{ paddingBottom: '56.25%', userSelect: 'none' }}
               onContextMenu={handleContextMenu}
+              onDragStart={handleDragStart}
             >
               <iframe
                 src={embedUrl!}
