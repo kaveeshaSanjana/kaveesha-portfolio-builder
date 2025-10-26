@@ -220,6 +220,10 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
     }
   }, []);
 
+  const blockContextMenu = useCallback((e: Event) => { e.preventDefault(); }, []);
+  const blockCopy = useCallback((e: ClipboardEvent) => { e.preventDefault(); }, []);
+  const blockDrag = useCallback((e: DragEvent) => { e.preventDefault(); }, []);
+
   // DevTools detection
   useEffect(() => {
     if (!open) return;
@@ -245,21 +249,25 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
   // Block keyboard shortcuts when dialog is open
   useEffect(() => {
     if (!open) return;
-    
+
     document.addEventListener('keydown', handleKeyDown);
-    document.addEventListener('contextmenu', (e) => e.preventDefault());
-    
+    document.addEventListener('contextmenu', blockContextMenu as EventListener);
+    document.addEventListener('copy', blockCopy as EventListener);
+    document.addEventListener('dragstart', blockDrag as EventListener);
+
     // Disable text selection globally
     document.body.style.userSelect = 'none';
-    document.body.style.webkitUserSelect = 'none';
-    
+    ;(document.body.style as any).webkitUserSelect = 'none';
+
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
-      document.removeEventListener('contextmenu', (e) => e.preventDefault());
+      document.removeEventListener('contextmenu', blockContextMenu as EventListener);
+      document.removeEventListener('copy', blockCopy as EventListener);
+      document.removeEventListener('dragstart', blockDrag as EventListener);
       document.body.style.userSelect = '';
-      document.body.style.webkitUserSelect = '';
+      ;(document.body.style as any).webkitUserSelect = '';
     };
-  }, [open, handleKeyDown]);
+  }, [open, handleKeyDown, blockContextMenu, blockCopy, blockDrag]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -310,8 +318,8 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
               
               {/* Recording detection overlay */}
               {isRecording && (
-                <div className="absolute inset-0 z-20 bg-black flex items-center justify-center">
-                  <p className="text-white text-lg font-semibold">
+                <div className="absolute inset-0 z-40 bg-background/95 flex items-center justify-center">
+                  <p className="text-foreground text-lg font-semibold">
                     Screen Recording Detected - Access Restricted
                   </p>
                 </div>
@@ -321,7 +329,7 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
               {!isRecording && watermarks.map(mark => (
                 <div
                   key={mark.id}
-                  className="absolute z-15 text-white font-mono text-xs pointer-events-none select-none"
+                  className="absolute z-30 text-foreground font-mono text-xs pointer-events-none select-none"
                   style={{
                     top: `${mark.top}%`,
                     left: `${mark.left}%`,
