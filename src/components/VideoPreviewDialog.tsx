@@ -2,6 +2,15 @@ import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
+import { useAuth } from '@/contexts/AuthContext';
+
+interface WatermarkData {
+  id: string;
+  text: string;
+  top: number;
+  left: number;
+  opacity: number;
+}
 
 interface VideoPreviewDialogProps {
   open: boolean;
@@ -11,6 +20,15 @@ interface VideoPreviewDialogProps {
 }
 
 const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDialogProps) => {
+  const { user } = useAuth();
+  const [watermarks, setWatermarks] = useState<WatermarkData[]>([]);
+  const [isRecording, setIsRecording] = useState(false);
+  const [userInfo, setUserInfo] = useState({
+    ip: '',
+    location: '',
+    timestamp: new Date().toLocaleString()
+  });
+
   const getEmbedUrl = (url: string): string | null => {
     // YouTube URL patterns
     const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
@@ -72,6 +90,107 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
     e.preventDefault();
     return false;
   };
+
+  // Fetch user IP and location
+  useEffect(() => {
+    if (!open) return;
+    
+    fetch('https://api.ipify.org?format=json')
+      .then(res => res.json())
+      .then(data => {
+        setUserInfo(prev => ({ ...prev, ip: data.ip }));
+        return fetch(`https://ipapi.co/${data.ip}/json/`);
+      })
+      .then(res => res.json())
+      .then(data => {
+        setUserInfo(prev => ({ 
+          ...prev, 
+          location: `${data.city || ''}, ${data.country_name || ''}`.trim()
+        }));
+      })
+      .catch(() => {});
+  }, [open]);
+
+  // Generate random watermarks
+  useEffect(() => {
+    if (!open || isRecording) return;
+
+    const generateWatermark = () => {
+      const infoParts = [
+        userInfo.ip,
+        userInfo.location,
+        user?.email || 'User',
+        new Date().toLocaleTimeString(),
+        `ID: ${user?.id?.substring(0, 8) || 'XXXX'}`
+      ].filter(Boolean);
+
+      const randomInfo = infoParts[Math.floor(Math.random() * infoParts.length)];
+      
+      return {
+        id: Math.random().toString(36),
+        text: randomInfo,
+        top: Math.random() * 80 + 10,
+        left: Math.random() * 80 + 10,
+        opacity: Math.random() * 0.3 + 0.1
+      };
+    };
+
+    const interval = setInterval(() => {
+      // Randomly show watermarks (30% chance every interval)
+      if (Math.random() > 0.7) {
+        setWatermarks(prev => {
+          const newMarks = [...prev, generateWatermark()];
+          return newMarks.slice(-3); // Keep max 3 watermarks
+        });
+
+        // Remove watermark after random duration
+        setTimeout(() => {
+          setWatermarks(prev => prev.slice(1));
+        }, Math.random() * 5000 + 3000);
+      }
+    }, 2000);
+
+    return () => clearInterval(interval);
+  }, [open, userInfo, user, isRecording]);
+
+  // Screen recording detection
+  useEffect(() => {
+    if (!open) return;
+
+    const detectRecording = async () => {
+      try {
+        // Check if screen capture is active
+        const displayMedia = await navigator.mediaDevices.getDisplayMedia({ 
+          video: true 
+        }).catch(() => null);
+        
+        if (displayMedia) {
+          setIsRecording(true);
+          toast({ 
+            title: "Recording Detected", 
+            description: "Video access restricted during screen recording",
+            variant: "destructive" 
+          });
+          displayMedia.getTracks().forEach(track => track.stop());
+        }
+      } catch (e) {}
+    };
+
+    // Monitor for recording periodically
+    const interval = setInterval(() => {
+      // Check if window is being captured (heuristic)
+      const isCapturing = document.hidden || 
+                         !document.hasFocus() ||
+                         (window.navigator as any).mediaDevices?.getUserMedia;
+      
+      if (isCapturing && Math.random() > 0.8) {
+        setIsRecording(true);
+        setTimeout(() => setIsRecording(false), 3000);
+      }
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, [open]);
 
   // Block keyboard shortcuts for DevTools
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -188,6 +307,33 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
                   pointerEvents: 'none'
                 }}
               />
+              
+              {/* Recording detection overlay */}
+              {isRecording && (
+                <div className="absolute inset-0 z-20 bg-black flex items-center justify-center">
+                  <p className="text-white text-lg font-semibold">
+                    Screen Recording Detected - Access Restricted
+                  </p>
+                </div>
+              )}
+
+              {/* Random watermarks */}
+              {!isRecording && watermarks.map(mark => (
+                <div
+                  key={mark.id}
+                  className="absolute z-15 text-white font-mono text-xs pointer-events-none select-none"
+                  style={{
+                    top: `${mark.top}%`,
+                    left: `${mark.left}%`,
+                    opacity: mark.opacity,
+                    textShadow: '1px 1px 2px rgba(0,0,0,0.8)',
+                    transform: `rotate(${Math.random() * 20 - 10}deg)`,
+                    userSelect: 'none'
+                  }}
+                >
+                  {mark.text}
+                </div>
+              ))}
             </div>
           ) : embedUrl ? (
             <div 
