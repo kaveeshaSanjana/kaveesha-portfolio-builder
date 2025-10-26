@@ -1,6 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { X } from 'lucide-react';
+import { toast } from '@/hooks/use-toast';
 
 interface VideoPreviewDialogProps {
   open: boolean;
@@ -71,6 +72,75 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
     e.preventDefault();
     return false;
   };
+
+  // Block keyboard shortcuts for DevTools
+  const handleKeyDown = useCallback((e: KeyboardEvent) => {
+    // F12
+    if (e.keyCode === 123) {
+      e.preventDefault();
+      toast({ title: "Action blocked", variant: "destructive" });
+      return false;
+    }
+    // Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+Shift+C, Ctrl+U
+    if (e.ctrlKey && e.shiftKey && (e.keyCode === 73 || e.keyCode === 74 || e.keyCode === 67)) {
+      e.preventDefault();
+      toast({ title: "Action blocked", variant: "destructive" });
+      return false;
+    }
+    // Ctrl+U (view source)
+    if (e.ctrlKey && e.keyCode === 85) {
+      e.preventDefault();
+      toast({ title: "Action blocked", variant: "destructive" });
+      return false;
+    }
+    // Ctrl+S (save)
+    if (e.ctrlKey && e.keyCode === 83) {
+      e.preventDefault();
+      toast({ title: "Action blocked", variant: "destructive" });
+      return false;
+    }
+  }, []);
+
+  // DevTools detection
+  useEffect(() => {
+    if (!open) return;
+
+    const detectDevTools = () => {
+      const threshold = 160;
+      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
+      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
+      
+      if (widthThreshold || heightThreshold) {
+        toast({ 
+          title: "Security Warning", 
+          description: "Developer tools detected. Video access may be restricted.",
+          variant: "destructive" 
+        });
+      }
+    };
+
+    const interval = setInterval(detectDevTools, 1000);
+    return () => clearInterval(interval);
+  }, [open]);
+
+  // Block keyboard shortcuts when dialog is open
+  useEffect(() => {
+    if (!open) return;
+    
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('contextmenu', (e) => e.preventDefault());
+    
+    // Disable text selection globally
+    document.body.style.userSelect = 'none';
+    document.body.style.webkitUserSelect = 'none';
+    
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+      document.removeEventListener('contextmenu', (e) => e.preventDefault());
+      document.body.style.userSelect = '';
+      document.body.style.webkitUserSelect = '';
+    };
+  }, [open, handleKeyDown]);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
