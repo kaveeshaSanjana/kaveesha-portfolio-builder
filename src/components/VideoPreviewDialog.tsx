@@ -39,8 +39,8 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
   const [loaded, setLoaded] = useState(false);
   const [fallback, setFallback] = useState(false);
 
-  const insideIframe = typeof window !== 'undefined' && window.self !== window.top;
-  const hostname = embedUrl ? (() => { try { return new URL(embedUrl).hostname; } catch { return ''; } })() : '';
+  const isGoogleDrive = embedUrl?.includes('drive.google.com') || false;
+  const isYouTube = embedUrl?.includes('youtube') || false;
 
   // Fallback if iframe doesn't load (common when provider blocks embedding)
   useEffect(() => {
@@ -78,18 +78,20 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
               <iframe
                 src={embedUrl!}
                 className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-auto"
-                allow="accelerometer; autoplay; encrypted-media; gyroscope"
+                allow={isGoogleDrive ? "autoplay; fullscreen" : "accelerometer; autoplay; encrypted-media; gyroscope"}
                 referrerPolicy="no-referrer"
                 onLoad={() => setLoaded(true)}
-                sandbox="allow-scripts allow-same-origin"
+                {...(isYouTube ? { sandbox: "allow-scripts allow-same-origin" } : {})}
                 style={{ border: 'none' }}
               />
-              {/* Security overlay to prevent right-click and inspect */}
-              <div 
-                className="absolute inset-0 pointer-events-none z-10"
-                onContextMenu={handleContextMenu}
-                style={{ userSelect: 'none' }}
-              />
+              {/* Security overlay to prevent right-click and inspect - only for YouTube */}
+              {isYouTube && (
+                <div 
+                  className="absolute inset-0 pointer-events-none z-10"
+                  onContextMenu={handleContextMenu}
+                  style={{ userSelect: 'none' }}
+                />
+              )}
             </div>
           ) : embedUrl ? (
             <div 
@@ -101,10 +103,10 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
                 src={embedUrl!}
                 title={title || 'Video Preview'}
                 className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-auto"
-                allow="accelerometer; autoplay; encrypted-media; gyroscope"
+                allow={isGoogleDrive ? "autoplay; fullscreen" : "accelerometer; autoplay; encrypted-media; gyroscope"}
                 referrerPolicy="no-referrer"
                 onLoad={() => setLoaded(true)}
-                sandbox="allow-scripts allow-same-origin"
+                {...(isYouTube ? { sandbox: "allow-scripts allow-same-origin" } : {})}
                 style={{ border: 'none' }}
               />
               {!loaded && (
