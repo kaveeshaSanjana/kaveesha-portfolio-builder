@@ -15,7 +15,7 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
     const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const youtubeMatch = url.match(youtubeRegex);
     if (youtubeMatch) {
-      return `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}`;
+      return `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}?rel=0&modestbranding=1&controls=1&disablekb=1&fs=0&iv_load_policy=3&playsinline=1`;
     }
 
     // Google Drive URL patterns
@@ -53,7 +53,7 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
     return () => window.clearTimeout(t);
   }, [embedUrl, open]);
 
-  const shouldUseIframe = !!embedUrl && !(insideIframe && hostname.includes('drive.google.com')) && !fallback;
+  const shouldUseIframe = !!embedUrl && !fallback;
 
   const handleContextMenu = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -92,18 +92,26 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
               />
             </div>
           ) : embedUrl ? (
-            <div className="text-center py-12">
-              <p className="mb-4 text-muted-foreground">
-                This content cannot be displayed here. Open it in a new tab.
-              </p>
-              <a
-                href={url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-primary hover:underline"
-              >
-                Open video
-              </a>
+            <div 
+              className="relative w-full select-none" 
+              style={{ paddingBottom: '56.25%' }}
+              onContextMenu={handleContextMenu}
+            >
+              <iframe
+                src={embedUrl!}
+                title={title || 'Video Preview'}
+                className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-auto"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope"
+                referrerPolicy="no-referrer"
+                onLoad={() => setLoaded(true)}
+                sandbox="allow-scripts allow-same-origin"
+                style={{ border: 'none' }}
+              />
+              {!loaded && (
+                <div className="absolute inset-0 z-10 flex items-center justify-center">
+                  <div className="h-8 w-8 animate-spin rounded-full border-2 border-muted-foreground/40 border-top-primary" />
+                </div>
+              )}
             </div>
           ) : (
             <div className="text-center py-12">
