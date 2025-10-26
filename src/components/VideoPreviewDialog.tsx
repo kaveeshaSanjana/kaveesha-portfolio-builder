@@ -55,24 +55,40 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
 
   const shouldUseIframe = !!embedUrl && !(insideIframe && hostname.includes('drive.google.com')) && !fallback;
 
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    return false;
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-4xl w-full p-0">
+      <DialogContent className="max-w-4xl w-full p-0" onContextMenu={handleContextMenu}>
         <DialogHeader className="p-6 pb-0">
           <DialogTitle className="flex items-center justify-between">
             <span>{title || 'Video Preview'}</span>
           </DialogTitle>
         </DialogHeader>
-        <div className="p-6 pt-4">
+        <div className="p-6 pt-4" onContextMenu={handleContextMenu}>
           {shouldUseIframe ? (
-            <div className="relative w-full" style={{ paddingBottom: '56.25%' }}>
+            <div 
+              className="relative w-full select-none" 
+              style={{ paddingBottom: '56.25%' }}
+              onContextMenu={handleContextMenu}
+            >
               <iframe
                 src={embedUrl!}
-                className="absolute top-0 left-0 w-full h-full rounded-lg"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                allowFullScreen
+                className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-auto"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope"
                 referrerPolicy="no-referrer"
                 onLoad={() => setLoaded(true)}
+                sandbox="allow-scripts allow-same-origin"
+                style={{ border: 'none' }}
+              />
+              {/* Security overlay to prevent right-click and inspect */}
+              <div 
+                className="absolute inset-0 pointer-events-none z-10"
+                onContextMenu={handleContextMenu}
+                style={{ userSelect: 'none' }}
               />
             </div>
           ) : embedUrl ? (
