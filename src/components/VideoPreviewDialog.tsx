@@ -15,7 +15,7 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
     const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
     const youtubeMatch = url.match(youtubeRegex);
     if (youtubeMatch) {
-      return `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}?rel=0&modestbranding=1&controls=1&disablekb=1&fs=0&iv_load_policy=3&playsinline=1`;
+      return `https://www.youtube-nocookie.com/embed/${youtubeMatch[1]}`;
     }
 
     // Google Drive URL patterns
@@ -78,13 +78,13 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
               <iframe
                 src={embedUrl!}
                 className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-auto"
-                allow={isGoogleDrive ? "autoplay; fullscreen" : "accelerometer; autoplay; encrypted-media; gyroscope"}
-                referrerPolicy="no-referrer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
                 onLoad={() => setLoaded(true)}
-                {...(isYouTube ? { sandbox: "allow-scripts allow-same-origin" } : {})}
+                allowFullScreen
                 style={{ border: 'none' }}
               />
-              {/* Security overlay to prevent right-click and inspect - only for YouTube */}
+              {/* Security overlay - only for YouTube */}
               {isYouTube && (
                 <div 
                   className="absolute inset-0 pointer-events-none z-10"
@@ -103,10 +103,10 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
                 src={embedUrl!}
                 title={title || 'Video Preview'}
                 className="absolute top-0 left-0 w-full h-full rounded-lg pointer-events-auto"
-                allow={isGoogleDrive ? "autoplay; fullscreen" : "accelerometer; autoplay; encrypted-media; gyroscope"}
-                referrerPolicy="no-referrer"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                referrerPolicy="strict-origin-when-cross-origin"
                 onLoad={() => setLoaded(true)}
-                {...(isYouTube ? { sandbox: "allow-scripts allow-same-origin" } : {})}
+                allowFullScreen
                 style={{ border: 'none' }}
               />
               {!loaded && (
