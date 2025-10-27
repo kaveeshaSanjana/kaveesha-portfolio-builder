@@ -6,13 +6,21 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useInstituteRole } from '@/hooks/useInstituteRole';
 import { AccessControl, UserRole } from '@/utils/permissions';
 import { homeworkSubmissionsApi, type HomeworkSubmission } from '@/api/homeworkSubmissions.api';
-import { FileText, Calendar, User, ExternalLink, RefreshCw, Lock } from 'lucide-react';
+import { FileText, RefreshCw, Lock } from 'lucide-react';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
 
 interface HomeworkSubmissionsDialogProps {
   homework: any;
@@ -26,6 +34,8 @@ const HomeworkSubmissionsDialog = ({ homework, isOpen, onClose }: HomeworkSubmis
   const userRole = useInstituteRole();
   const [submissions, setSubmissions] = useState<HomeworkSubmission[]>([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [page, setPage] = useState(0);
+  const [rowsPerPage, setRowsPerPage] = useState(10);
 
   const loadSubmissions = async () => {
     if (!homework?.id) return;
@@ -72,6 +82,18 @@ const HomeworkSubmissionsDialog = ({ homework, isOpen, onClose }: HomeworkSubmis
       minute: '2-digit'
     });
   };
+
+  // Pagination handlers
+  const handleChangePage = (_: unknown, newPage: number) => setPage(newPage);
+  const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setRowsPerPage(+event.target.value);
+    setPage(0);
+  };
+
+  // Reset page when submissions change
+  useEffect(() => {
+    setPage(0);
+  }, [submissions.length]);
 
   // Check if user has permission to view homework submissions
   if (!AccessControl.hasPermission(userRole, 'view-homework-submissions')) {
