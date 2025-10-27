@@ -6,11 +6,10 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
-
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 import { useInstituteRole } from '@/hooks/useInstituteRole';
-import { AccessControl, UserRole } from '@/utils/permissions';
+import { AccessControl } from '@/utils/permissions';
 import { homeworkSubmissionsApi, type HomeworkSubmission } from '@/api/homeworkSubmissions.api';
 import { FileText, RefreshCw, Lock } from 'lucide-react';
 import Paper from '@mui/material/Paper';
@@ -42,25 +41,28 @@ const HomeworkSubmissionsDialog = ({ homework, isOpen, onClose }: HomeworkSubmis
 
     setIsLoading(true);
     try {
-      const response = await homeworkSubmissionsApi.getSubmissions({
-        homeworkId: homework.id,
-        page: 1,
-        limit: 50,
-        userId: user?.id,
-        role: userRole,
-        instituteId: homework.instituteId,
-        classId: homework.classId,
-        subjectId: homework.subjectId
-      }, true);
+      const response = await homeworkSubmissionsApi.getSubmissions(
+        {
+          homeworkId: homework.id,
+          page: 1,
+          limit: 50,
+          userId: user?.id,
+          role: userRole,
+          instituteId: homework.instituteId,
+          classId: homework.classId,
+          subjectId: homework.subjectId,
+        },
+        true
+      );
 
       const submissionsList = Array.isArray(response) ? response : response.data || [];
       setSubmissions(submissionsList);
     } catch (error) {
       console.error('Error loading submissions:', error);
       toast({
-        title: "Error",
-        description: "Failed to load homework submissions",
-        variant: "destructive"
+        title: 'Error',
+        description: 'Failed to load homework submissions',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -79,7 +81,7 @@ const HomeworkSubmissionsDialog = ({ homework, isOpen, onClose }: HomeworkSubmis
       month: 'short',
       day: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -144,15 +146,8 @@ const HomeworkSubmissionsDialog = ({ homework, isOpen, onClose }: HomeworkSubmis
 
           {/* Refresh Button */}
           <div className="flex justify-between items-center">
-            <h3 className="text-lg font-semibold">
-              Submissions ({submissions.length})
-            </h3>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={loadSubmissions}
-              disabled={isLoading}
-            >
+            <h3 className="text-lg font-semibold">Submissions ({submissions.length})</h3>
+            <Button variant="outline" size="sm" onClick={loadSubmissions} disabled={isLoading}>
               {isLoading ? (
                 <>
                   <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
@@ -180,73 +175,79 @@ const HomeworkSubmissionsDialog = ({ homework, isOpen, onClose }: HomeworkSubmis
               <p className="text-muted-foreground">No students have submitted this homework yet.</p>
             </div>
           ) : (
-            <div className="space-y-4">
-              {submissions.map((submission) => (
-                <div key={submission.id} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2">
-                        <User className="h-4 w-4" />
-                        <span className="font-medium">
-                          {submission.student?.firstName} {submission.student?.lastName}
-                        </span>
-                        <Badge variant={submission.isActive ? 'default' : 'secondary'}>
-                          {submission.isActive ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        Submitted: {formatDate(submission.submissionDate)}
-                      </div>
-                    </div>
-                  </div>
-
-                  {submission.remarks && (
-                    <div>
-                      <h4 className="text-sm font-medium mb-1">Student Notes:</h4>
-                      <p className="text-sm text-muted-foreground bg-muted/50 p-2 rounded">
-                        {submission.remarks}
-                      </p>
-                    </div>
-                  )}
-
-                  {submission.fileUrl && (
-                    <div>
-                      <h4 className="text-sm font-medium mb-2">Submitted File:</h4>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => window.open(submission.fileUrl, '_blank')}
-                      >
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        View File
-                      </Button>
-                    </div>
-                  )}
-
-                  {submission.teacherCorrectionFileUrl && (
-                    <div>
-                      <h4 className="text-sm font-medium mb-2">Teacher Correction:</h4>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => window.open(submission.teacherCorrectionFileUrl, '_blank')}
-                      >
-                        <ExternalLink className="h-3 w-3 mr-1" />
-                        View Correction
-                      </Button>
-                    </div>
-                  )}
-
-                  <div className="text-xs text-muted-foreground pt-2 border-t">
-                    Created: {formatDate(submission.createdAt)}
-                    {submission.updatedAt !== submission.createdAt && (
-                      <> • Updated: {formatDate(submission.updatedAt)}</>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+            <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+              <TableContainer sx={{ maxHeight: 440 }}>
+                <Table stickyHeader aria-label="homework submissions table">
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>Student</TableCell>
+                      <TableCell>Submitted</TableCell>
+                      <TableCell>Remarks</TableCell>
+                      <TableCell align="right">File</TableCell>
+                      <TableCell align="right">Correction</TableCell>
+                      <TableCell>Created</TableCell>
+                      <TableCell>Updated</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {submissions
+                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                      .map((submission) => (
+                        <TableRow hover tabIndex={-1} key={submission.id}>
+                          <TableCell>
+                            {submission.student?.firstName} {submission.student?.lastName}
+                          </TableCell>
+                          <TableCell>{formatDate(submission.submissionDate)}</TableCell>
+                          <TableCell>{submission.remarks || '-'}</TableCell>
+                          <TableCell align="right">
+                            {submission.fileUrl ? (
+                              <a
+                                href={submission.fileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline"
+                              >
+                                View
+                              </a>
+                            ) : (
+                              '-'
+                            )}
+                          </TableCell>
+                          <TableCell align="right">
+                            {submission.teacherCorrectionFileUrl ? (
+                              <a
+                                href={submission.teacherCorrectionFileUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="underline"
+                              >
+                                Correction
+                              </a>
+                            ) : (
+                              '-'
+                            )}
+                          </TableCell>
+                          <TableCell>{formatDate(submission.createdAt)}</TableCell>
+                          <TableCell>
+                            {submission.updatedAt !== submission.createdAt
+                              ? formatDate(submission.updatedAt)
+                              : '-'}
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+              <TablePagination
+                rowsPerPageOptions={[10, 25, 100]}
+                component="div"
+                count={submissions.length}
+                rowsPerPage={rowsPerPage}
+                page={page}
+                onPageChange={handleChangePage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
+            </Paper>
           )}
         </div>
       </DialogContent>
