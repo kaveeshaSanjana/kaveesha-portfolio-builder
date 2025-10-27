@@ -22,10 +22,6 @@ interface VideoPreviewDialogProps {
 const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDialogProps) => {
   const { user } = useAuth();
   const [watermarks, setWatermarks] = useState<WatermarkData[]>([]);
-<<<<<<< HEAD
-=======
-  const [isRecording, setIsRecording] = useState(false);
->>>>>>> 8aa4289f99462c8690826c3d4bd3dd1bc5c499a2
   const [userInfo, setUserInfo] = useState({
     ip: '',
     location: '',
@@ -116,11 +112,7 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
 
   // Generate random watermarks
   useEffect(() => {
-<<<<<<< HEAD
     if (!open) return;
-=======
-    if (!open || isRecording) return;
->>>>>>> 8aa4289f99462c8690826c3d4bd3dd1bc5c499a2
 
     const generateWatermark = () => {
       const infoParts = [
@@ -158,52 +150,9 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
     }, 2000);
 
     return () => clearInterval(interval);
-<<<<<<< HEAD
   }, [open, userInfo, user]);
 
   // Simplified recording detection - removed aggressive checks
-=======
-  }, [open, userInfo, user, isRecording]);
-
-  // Screen recording detection
-  useEffect(() => {
-    if (!open) return;
-
-    const detectRecording = async () => {
-      try {
-        // Check if screen capture is active
-        const displayMedia = await navigator.mediaDevices.getDisplayMedia({ 
-          video: true 
-        }).catch(() => null);
-        
-        if (displayMedia) {
-          setIsRecording(true);
-          toast({ 
-            title: "Recording Detected", 
-            description: "Video access restricted during screen recording",
-            variant: "destructive" 
-          });
-          displayMedia.getTracks().forEach(track => track.stop());
-        }
-      } catch (e) {}
-    };
-
-    // Monitor for recording periodically
-    const interval = setInterval(() => {
-      // Check if window is being captured (heuristic)
-      const isCapturing = document.hidden || 
-                         !document.hasFocus() ||
-                         (window.navigator as any).mediaDevices?.getUserMedia;
-      
-      if (isCapturing && Math.random() > 0.8) {
-        setIsRecording(true);
-        setTimeout(() => setIsRecording(false), 3000);
-      }
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [open]);
->>>>>>> 8aa4289f99462c8690826c3d4bd3dd1bc5c499a2
 
   // Block keyboard shortcuts for DevTools
   const handleKeyDown = useCallback((e: KeyboardEvent) => {
@@ -237,31 +186,7 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
   const blockCopy = useCallback((e: ClipboardEvent) => { e.preventDefault(); }, []);
   const blockDrag = useCallback((e: DragEvent) => { e.preventDefault(); }, []);
 
-<<<<<<< HEAD
   // DevTools detection removed - was causing false positives
-=======
-  // DevTools detection
-  useEffect(() => {
-    if (!open) return;
-
-    const detectDevTools = () => {
-      const threshold = 160;
-      const widthThreshold = window.outerWidth - window.innerWidth > threshold;
-      const heightThreshold = window.outerHeight - window.innerHeight > threshold;
-      
-      if (widthThreshold || heightThreshold) {
-        toast({ 
-          title: "Security Warning", 
-          description: "Developer tools detected. Video access may be restricted.",
-          variant: "destructive" 
-        });
-      }
-    };
-
-    const interval = setInterval(detectDevTools, 1000);
-    return () => clearInterval(interval);
-  }, [open]);
->>>>>>> 8aa4289f99462c8690826c3d4bd3dd1bc5c499a2
 
   // Block keyboard shortcuts when dialog is open
   useEffect(() => {
@@ -333,24 +258,10 @@ const VideoPreviewDialog = ({ open, onOpenChange, url, title }: VideoPreviewDial
                 }}
               />
               
-<<<<<<< HEAD
               {/* Recording detection overlay removed */}
 
               {/* Random watermarks */}
               {watermarks.map(mark => (
-=======
-              {/* Recording detection overlay */}
-              {isRecording && (
-                <div className="absolute inset-0 z-40 bg-background/95 flex items-center justify-center">
-                  <p className="text-foreground text-lg font-semibold">
-                    Screen Recording Detected - Access Restricted
-                  </p>
-                </div>
-              )}
-
-              {/* Random watermarks */}
-              {!isRecording && watermarks.map(mark => (
->>>>>>> 8aa4289f99462c8690826c3d4bd3dd1bc5c499a2
                 <div
                   key={mark.id}
                   className="absolute z-30 text-foreground font-mono text-xs pointer-events-none select-none"
